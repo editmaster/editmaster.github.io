@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스파게티 괴물교 — 공식 홈페이지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0608;
+    --deep-purple: #1a0a2e;
+    --purple: #2d1260;
+    --gold: #c9972a;
+    --gold-light: #f0c866;
+    --gold-dark: #8a6010;
+    --cream: #f5ead8;
+    --muted: #8a7a9a;
+    --noodle: #d4a855;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--black);
+    color: var(--cream);
+    font-family: 'Noto Sans KR', sans-serif;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    height: 100vh;
+  }
+
+  /* ── NOODLE CANVAS ── */
+  #noodle-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.13;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: linear-gradient(to bottom, rgba(10,6,8,0.97), transparent);
+    padding: 0 2rem;
+  }
+
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .logo-icon { width: 44px; height: 44px; }
+
+  .logo-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1.2;
+    letter-spacing: 0.05em;
+  }
+  .logo-text span {
+    display: block;
+    font-size: 0.62rem;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  nav a {
+    color: var(--cream);
+    text-decoration: none;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    transition: color 0.2s, background 0.2s;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  nav a:hover { color: var(--gold-light); background: rgba(201,151,42,0.08); }
+  nav a.active { color: var(--gold-light); }
+
+  .nav-login {
+    border: 1px solid var(--gold-dark);
+    color: var(--gold) !important;
+    margin-left: 0.5rem;
+  }
+  .nav-login:hover { background: rgba(201,151,42,0.15) !important; }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--gold);
+    transition: 0.3s;
+  }
+
+  /* ── PAGE SYSTEM ── */
+  .page-container {
+    position: fixed;
+    top: 70px;
+    left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .page {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(18px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .page.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .page.exit {
+    opacity: 0;
+    transform: translateY(-18px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+    margin: 0 auto;
+    max-width: 800px;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem 4rem;
+  }
+
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 3rem;
+  }
+
+  /* ── HOME / HERO ── */
+  #page-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 100%;
+    padding: 2rem;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 40%, rgba(45,18,96,0.8) 0%, transparent 70%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(10,6,8,1) 0%, transparent 60%);
+  }
+
+  .hero-emblem {
+    margin-bottom: 2.5rem;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--gold-light);
+    text-shadow: 0 0 60px rgba(240,200,102,0.3);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-slogan {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 300;
+    color: var(--cream);
+    max-width: 640px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ── QUICK MENU ── */
+  .quick-menu-wrap {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 1px;
+    background: rgba(201,151,42,0.1);
+    border: 1px solid rgba(201,151,42,0.15);
+  }
+
+  .menu-item {
+    background: rgba(10,6,8,0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.4rem 1rem;
+    cursor: pointer;
+    transition: background 0.25s;
+    text-decoration: none;
+    color: var(--cream);
+    border: none;
+  }
+  .menu-item:hover { background: rgba(45,18,96,0.7); }
+  .menu-item:hover .menu-icon,
+  .menu-item:hover .menu-label { color: var(--gold-light); }
+
+  .menu-icon {
+    font-size: 1.5rem;
+    color: var(--gold);
+    transition: color 0.25s;
+    line-height: 1;
+  }
+  .menu-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    transition: color 0.25s;
+  }
+
+  /* ── VERSE (on home) ── */
+  .verse-ornament {
+    font-size: 2rem;
+    color: var(--gold-dark);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5em;
+  }
+
+  .verse-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(0.95rem, 2vw, 1.2rem);
+    font-weight: 300;
+    line-height: 2;
+    color: var(--cream);
+    font-style: italic;
+    margin-bottom: 1rem;
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto 1rem;
+  }
+
+  .verse-source {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    margin-top: 1rem;
+  }
+
+  /* ── NEWS ── */
+  .news-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .news-list { display: flex; flex-direction: column; gap: 0; }
+
+  .news-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.2rem;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid rgba(201,151,42,0.12);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .news-item:first-child { border-top: 1px solid rgba(201,151,42,0.12); }
+  .news-item:hover { background: rgba(201,151,42,0.04); }
+
+  .news-badge {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: var(--gold-dark);
+    color: var(--black);
+    padding: 0.2rem 0.5rem;
+    height: fit-content;
+    margin-top: 0.2rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .news-badge.new { background: var(--gold); }
+
+  .news-title-row { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .news-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--cream);
+    line-height: 1.5;
+  }
+
+  .news-date { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
+
+  .announce-box {
+    border: 1px solid rgba(201,151,42,0.25);
+    padding: 2rem;
+  }
+
+  .announce-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(201,151,42,0.2);
+  }
+
+  .announce-list { display: flex; flex-direction: column; gap: 1rem; }
+
+  .announce-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 0.8rem;
+    border-left: 2px solid var(--gold-dark);
+  }
+
+  .announce-item-title { font-size: 0.82rem; color: var(--cream); line-height: 1.5; }
+  .announce-item-date { font-size: 0.68rem; color: var(--muted); }
+
+  /* ── CONTACT BUTTON ── */
+  .nav-contact-btn {
+    background: rgba(201,151,42,0.08) !important;
+    border: 1px solid rgba(201,151,42,0.35) !important;
+    color: var(--gold) !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.08em !important;
+    border-radius: 2px !important;
+    transition: background 0.25s, box-shadow 0.25s, color 0.25s !important;
+    margin-left: 0.1rem !important;
+    margin-right: 0.3rem !important;
+  }
+  .nav-contact-btn:hover {
+    background: rgba(201,151,42,0.18) !important;
+    color: var(--gold-light) !important;
+    box-shadow: 0 0 10px rgba(201,151,42,0.2) !important;
+  }
+
+  .contact-btn {
+    background: transparent;
+    border: 1px solid var(--gold-dark);
+    color: var(--gold);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    padding: 0.45rem 1rem;
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .contact-btn:hover {
+    background: rgba(201,151,42,0.12);
+    color: var(--gold-light);
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(201,151,42,0.2);
+  }
+
+  /* ── CONTACT MODAL ── */
+  .contact-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,6,8,0.88);
+    z-index: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .contact-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .contact-modal {
+    position: relative;
+    max-width: 460px;
+    width: 100%;
+    background: linear-gradient(160deg, #1a0a2e 0%, #0d0618 60%, #1a0a2e 100%);
+    border: 1px solid rgba(201,151,42,0.45);
+    padding: 3rem 2.5rem 2.5rem;
+    text-align: center;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 0 60px rgba(201,151,42,0.1), 0 0 120px rgba(45,18,96,0.4);
+  }
+  .contact-overlay.open .contact-modal {
+    transform: scale(1) translateY(0);
+  }
+  .contact-modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: none;
+    border: 1px solid rgba(201,151,42,0.2);
+    color: var(--muted);
+    font-size: 1rem;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s, border-color 0.2s;
+    border-radius: 0;
+  }
+  .contact-modal-close:hover { color: var(--gold-light); border-color: var(--gold); }
+
+  .contact-rune {
+    font-size: 2.8rem;
+    margin-bottom: 0.8rem;
+    animation: float 5s ease-in-out infinite;
+    display: block;
+    filter: drop-shadow(0 0 12px rgba(201,151,42,0.5));
+  }
+  .contact-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 1.8rem;
+  }
+  .contact-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .contact-headline::before,
+  .contact-headline::after {
+    content: '〰〰';
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(201,151,42,0.3);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+  .contact-headline::after {
+    margin-top: 0.6rem;
+    margin-bottom: 0;
+  }
+  .contact-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+    margin: 0 auto 1.8rem;
+  }
+  .contact-info-box {
+    background: rgba(201,151,42,0.05);
+    border: 1px solid rgba(201,151,42,0.2);
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .contact-info-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .contact-info-value {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+    word-break: break-all;
+  }
+  .contact-discord-link {
+    display: inline-block;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    word-break: break-all;
+    border-bottom: 1px solid rgba(201,151,42,0.3);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .contact-discord-link:hover {
+    color: #fff;
+    border-color: var(--gold);
+  }
+
+  .contact-footer-note {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 1.8rem;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* ── NEWS MODAL ── */
+  .news-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,6,8,0.92);
+    z-index: 500;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 5rem 1.5rem 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+  }
+  .news-modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .news-modal {
+    background: var(--deep-purple);
+    border: 1px solid rgba(201,151,42,0.3);
+    max-width: 760px;
+    width: 100%;
+    padding: 3rem;
+    position: relative;
+    transform: translateY(24px);
+    transition: transform 0.35s ease;
+  }
+  .news-modal-overlay.open .news-modal {
+    transform: translateY(0);
+  }
+  .news-modal-close {
+    position: absolute;
+    top: 1.2rem; right: 1.2rem;
+    background: none;
+    border: 1px solid rgba(201,151,42,0.25);
+    color: var(--muted);
+    font-size: 1.1rem;
+    width: 36px; height: 36px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .news-modal-close:hover { color: var(--gold-light); border-color: var(--gold); }
+  .news-modal-badge {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--gold-dark);
+    color: var(--black);
+    padding: 0.2rem 0.6rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 1.2rem;
+  }
+  .news-modal-badge.new { background: var(--gold); }
+  .news-modal-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1.5;
+    margin-bottom: 0.6rem;
+  }
+  .news-modal-date {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(201,151,42,0.15);
+  }
+  .news-modal-body {
+    font-size: 0.92rem;
+    line-height: 2;
+    color: var(--cream);
+    opacity: 0.9;
+  }
+  .news-modal-img {
+    width: 100%;
+    margin-top: 2rem;
+    border: 1px solid rgba(201,151,42,0.2);
+    display: block;
+  }
+
+  /* ── FOUNDER ── */
+  .founder-card {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 3rem;
+    align-items: start;
+    margin-top: 2rem;
+  }
+  .founder-portrait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .founder-portrait svg { filter: drop-shadow(0 0 20px rgba(201,151,42,0.3)); }
+  .founder-name {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
+  .founder-title { font-size: 0.72rem; color: var(--muted); text-align: center; letter-spacing: 0.2em; }
+  .founder-body p { font-size: 0.95rem; line-height: 2; color: var(--cream); margin-bottom: 1.2rem; }
+  .quote-block {
+    border-left: 3px solid var(--gold-dark);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    font-family: 'Noto Serif KR', serif;
+    font-style: italic;
+    color: var(--gold-light);
+    font-size: 1rem;
+    line-height: 1.8;
+    background: rgba(201,151,42,0.05);
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    margin-top: 2rem;
+    padding-left: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--gold-dark), transparent);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+    padding-left: 1.5rem;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.4rem; top: 0.4rem;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--black);
+    box-shadow: 0 0 10px rgba(201,151,42,0.5);
+  }
+  .timeline-era { font-size: 0.68rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.4rem; }
+  .timeline-heading { font-family: 'Noto Serif KR', serif; font-size: 1.1rem; color: var(--gold-light); margin-bottom: 0.6rem; }
+  .timeline-text { font-size: 0.88rem; line-height: 1.9; color: var(--cream); opacity: 0.85; }
+
+  /* ── RITUAL GRID ── */
+  .ritual-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .ritual-card {
+    border: 1px solid rgba(201,151,42,0.2);
+    padding: 2rem;
+    background: rgba(10,6,8,0.5);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .ritual-card:hover { border-color: rgba(201,151,42,0.5); transform: translateY(-4px); }
+  .ritual-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .ritual-title { font-family: 'Noto Serif KR', serif; font-size: 1rem; color: var(--gold-light); margin-bottom: 0.7rem; }
+  .ritual-text { font-size: 0.84rem; line-height: 1.8; color: var(--cream); opacity: 0.8; }
+
+  /* ── MISSION ── */
+  .mission-badge {
+    display: inline-block;
+    border: 1px solid var(--gold-dark);
+    color: var(--gold);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.4rem 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  .mission-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    color: var(--cream);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto 1.5rem;
+    text-align: center;
+  }
+  .mission-sub {
+    font-size: 0.88rem;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.8;
+    text-align: center;
+  }
+  .mission-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    max-width: 640px;
+    margin: 0 auto 3rem;
+    border: 1px solid rgba(201,151,42,0.15);
+    background: rgba(201,151,42,0.05);
+  }
+  .stat-item { padding: 1.5rem; text-align: center; }
+  .stat-num { font-family: 'Noto Serif KR', serif; font-size: 2rem; color: var(--gold-light); display: block; margin-bottom: 0.3rem; }
+  .stat-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.1em; }
+  .mission-activities {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .activity-item { display: flex; gap: 1rem; align-items: flex-start; }
+  .activity-icon {
+    width: 42px; height: 42px;
+    border: 1px solid rgba(201,151,42,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+  .activity-title { font-size: 0.9rem; color: var(--gold-light); margin-bottom: 0.3rem; font-family: 'Noto Serif KR', serif; }
+  .activity-text { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+
+  /* ── PILGRIMAGE ── */
+  .site-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+    margin-top: 2rem;
+  }
+  .site-map-placeholder {
+    aspect-ratio: 4/3;
+    background: rgba(26,10,46,0.5);
+    border: 1px solid rgba(201,151,42,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .site-pin { font-size: 2.5rem; animation: float 4s ease-in-out infinite; }
+  .site-item { padding: 1.5rem 0; border-bottom: 1px solid rgba(201,151,42,0.1); cursor: pointer; }
+  .site-item:first-child { border-top: 1px solid rgba(201,151,42,0.1); }
+  .site-number { font-size: 0.62rem; letter-spacing: 0.3em; color: var(--gold-dark); margin-bottom: 0.3rem; }
+  .site-name { font-family: 'Noto Serif KR', serif; font-size: 1rem; color: var(--gold-light); margin-bottom: 0.4rem; }
+  .site-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+  .site-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    padding: 0.15rem 0.5rem;
+    background: rgba(201,151,42,0.15);
+    border: 1px solid rgba(201,151,42,0.3);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  /* ── SCRIPTURE ── */
+  .scripture-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+  .scripture-book {
+    background: rgba(26,10,46,0.6);
+    border: 1px solid rgba(201,151,42,0.25);
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .book-icon { font-size: 3rem; margin-bottom: 1.2rem; }
+  .book-title { font-family: 'Noto Serif KR', serif; font-size: 1.1rem; color: var(--gold-light); margin-bottom: 0.5rem; }
+  .book-subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.5rem; letter-spacing: 0.1em; }
+  .book-excerpt {
+    font-family: 'Noto Serif KR', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--cream);
+    text-align: left;
+    border-top: 1px solid rgba(201,151,42,0.15);
+    padding-top: 1.5rem;
+  }
+  .verse-item { padding: 1.2rem 0; border-bottom: 1px solid rgba(201,151,42,0.08); }
+  .verse-ref { font-size: 0.68rem; letter-spacing: 0.25em; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .verse-content { font-family: 'Noto Serif KR', serif; font-size: 0.92rem; color: var(--cream); line-height: 1.8; font-style: italic; }
+
+  /* ── VISION ── */
+  .vision-statement {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, rgba(45,18,96,0.3), rgba(26,10,46,0.5));
+    border: 1px solid rgba(201,151,42,0.15);
+    margin-bottom: 3rem;
+  }
+  .vision-big-text { font-family: 'Noto Serif KR', serif; font-size: clamp(1.2rem, 3vw, 1.8rem); color: var(--gold-light); line-height: 1.7; margin-bottom: 1rem; }
+  .vision-small-text { font-size: 0.85rem; color: var(--muted); line-height: 1.7; max-width: 600px; margin: 0 auto; }
+  .vision-goals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .goal-card { padding: 2rem; border: 1px solid rgba(201,151,42,0.15); background: rgba(10,6,8,0.4); }
+  .goal-num { font-family: 'Noto Serif KR', serif; font-size: 2.5rem; color: rgba(201,151,42,0.2); display: block; margin-bottom: 0.5rem; line-height: 1; }
+  .goal-title { font-family: 'Noto Serif KR', serif; font-size: 0.95rem; color: var(--gold-light); margin-bottom: 0.6rem; }
+  .goal-text { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+  .goal-progress { margin-top: 1rem; height: 2px; background: rgba(201,151,42,0.1); position: relative; }
+  .goal-progress-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--gold-dark); }
+  .goal-progress-label { font-size: 0.65rem; color: var(--gold-dark); text-align: right; margin-top: 0.3rem; }
+
+  /* ── COMMUNITY ── */
+  .community-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+  .post-list { display: flex; flex-direction: column; gap: 0; }
+  .post-item {
+    padding: 1.3rem 0;
+    border-bottom: 1px solid rgba(201,151,42,0.1);
+    cursor: pointer;
+    transition: background 0.2s;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  .post-item:first-child { border-top: 1px solid rgba(201,151,42,0.1); }
+  .post-item:hover { background: rgba(201,151,42,0.03); }
+  .post-cat {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    white-space: nowrap;
+  }
+  .post-cat.cert { background: rgba(201,151,42,0.15); color: var(--gold); border: 1px solid rgba(201,151,42,0.25); }
+  .post-cat.counsel { background: rgba(45,18,96,0.5); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+  .post-cat.free { background: rgba(10,6,8,0.5); color: var(--muted); border: 1px solid rgba(138,122,154,0.2); }
+  .post-title { font-size: 0.88rem; color: var(--cream); line-height: 1.4; }
+  .post-meta { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+  .community-side {}
+  .side-box {
+    border: 1px solid rgba(201,151,42,0.2);
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    background: rgba(10,6,8,0.5);
+  }
+  .side-box-title { font-family: 'Noto Serif KR', serif; font-size: 0.9rem; color: var(--gold-light); margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(201,151,42,0.15); }
+  .cert-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .cert-thumb {
+    aspect-ratio: 1;
+    background: rgba(45,18,96,0.4);
+    border: 1px solid rgba(201,151,42,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+  }
+  .counsel-items { display: flex; flex-direction: column; gap: 0.8rem; }
+  .counsel-item { display: flex; gap: 0.7rem; align-items: flex-start; }
+  .counsel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-dark); margin-top: 0.4rem; flex-shrink: 0; }
+  .counsel-text { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── RESOURCES ── */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .resource-card {
+    border: 1px solid rgba(201,151,42,0.15);
+    overflow: hidden;
+    background: rgba(10,6,8,0.5);
+    transition: border-color 0.3s;
+  }
+  .resource-card:hover { border-color: rgba(201,151,42,0.4); }
+  .resource-header {
+    padding: 1.5rem;
+    background: rgba(45,18,96,0.3);
+    border-bottom: 1px solid rgba(201,151,42,0.1);
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .resource-icon { font-size: 1.8rem; }
+  .resource-type { font-size: 0.65rem; letter-spacing: 0.25em; color: var(--gold-dark); text-transform: uppercase; display: block; margin-bottom: 0.2rem; }
+  .resource-name { font-family: 'Noto Serif KR', serif; font-size: 0.9rem; color: var(--gold-light); }
+  .resource-body { padding: 1.2rem 1.5rem; font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+  .resource-footer { padding: 1rem 1.5rem; border-top: 1px solid rgba(201,151,42,0.08); display: flex; justify-content: space-between; align-items: center; }
+  .resource-size { font-size: 0.68rem; color: var(--muted); }
+  .resource-dl {
+    font-size: 0.72rem;
+    color: var(--gold);
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    background: none;
+    border: 1px solid rgba(201,151,42,0.3);
+    padding: 0.3rem 0.8rem;
+    transition: background 0.2s;
+  }
+  .resource-dl:hover { background: rgba(201,151,42,0.1); }
+
+  /* ── LOGIN PAGE ── */
+  .login-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(45,18,96,0.5) 0%, transparent 70%);
+  }
+  .login-box {
+    border: 1px solid rgba(201,151,42,0.3);
+    padding: 3rem;
+    max-width: 420px;
+    width: 100%;
+    background: rgba(10,6,8,0.7);
+  }
+  .login-icon { font-size: 2.5rem; margin-bottom: 1.2rem; }
+  .login-title { font-family: 'Noto Serif KR', serif; font-size: 1.4rem; color: var(--gold-light); margin-bottom: 0.5rem; }
+  .login-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+  .login-field {
+    width: 100%;
+    background: rgba(26,10,46,0.5);
+    border: 1px solid rgba(201,151,42,0.2);
+    color: var(--cream);
+    padding: 0.8rem 1rem;
+    font-size: 0.88rem;
+    font-family: 'Noto Sans KR', sans-serif;
+    margin-bottom: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .login-field:focus { border-color: var(--gold-dark); }
+  .login-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    padding: 0.9rem;
+    font-size: 0.88rem;
+    letter-spacing: 0.2em;
+    font-family: 'Noto Serif KR', serif;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .login-btn:hover { background: rgba(201,151,42,0.1); box-shadow: 0 0 20px rgba(201,151,42,0.15); }
+
+  /* ── PAGE BG SUBTLE ── */
+  #page-news { background: rgba(26,10,46,0.2); }
+  #page-founder { background: linear-gradient(135deg, rgba(26,10,46,0.4), rgba(10,6,8,0.4)); }
+  #page-history { background: rgba(10,6,8,0.3); }
+  #page-tradition { background: linear-gradient(135deg, rgba(26,10,46,0.3), rgba(10,6,8,0.3)); }
+
+  /* ── FOOTER (per page) ── */
+  .page-footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid rgba(201,151,42,0.1);
+    margin-top: 1rem;
+  }
+  .page-footer p { font-size: 0.72rem; color: var(--muted); opacity: 0.7; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { display: none; }
+    nav.open {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 70px; left: 0; right: 0;
+      background: rgba(10,6,8,0.98);
+      padding: 1rem;
+      border-bottom: 1px solid var(--gold-dark);
+      z-index: 99;
+      max-height: calc(100vh - 70px);
+      overflow-y: auto;
+    }
+    nav.open a { padding: 0.7rem 1rem; font-size: 0.9rem; }
+    .hamburger { display: flex; }
+    .news-grid { grid-template-columns: 1fr; }
+    .founder-card { grid-template-columns: 1fr; }
+    .site-main { grid-template-columns: 1fr; }
+    .scripture-layout { grid-template-columns: 1fr; }
+    .community-layout { grid-template-columns: 1fr; }
+    .menu-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .menu-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* ── WIGGLE FOOTER NOODLE ── */
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="noodle-canvas"></canvas>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo-mark" onclick="navigate('home')">
+      <svg class="logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="20" r="10" fill="none" stroke="#c9972a" stroke-width="1.5"/>
+        <circle cx="22" cy="20" r="5" fill="rgba(201,151,42,0.15)"/>
+        <line x1="16" y1="10" x2="12" y2="5" stroke="#c9972a" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="11" cy="4" r="2" fill="#f0c866"/>
+        <line x1="28" y1="10" x2="32" y2="5" stroke="#c9972a" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="33" cy="4" r="2" fill="#f0c866"/>
+        <path d="M8 30 Q14 26 20 30 Q26 34 32 30 Q38 26 42 28" stroke="#c9972a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M4 34 Q12 29 20 34 Q28 39 36 34 Q40 31 44 33" stroke="#c9972a" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.6"/>
+        <path d="M10 38 Q18 33 26 38 Q32 42 40 38" stroke="#c9972a" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.35"/>
+      </svg>
+      <div class="logo-text">
+        스파게티 괴물교
+        <span>SPAGHETTI MONSTER CHURCH</span>
+      </div>
+    </div>
+    <nav id="main-nav">
+      <a class="nav-contact-btn" onclick="openContactModal()">✉ 문의처</a><a onclick="navigate('founder')">창시자</a>
+      <a onclick="navigate('history')">역사</a>
+      <a onclick="navigate('tradition')">전통</a>
+      <a onclick="navigate('mission')">선교활동</a>
+      <a onclick="navigate('news')">뉴스</a>
+      <a onclick="navigate('pilgrimage')">성지</a>
+      <a onclick="navigate('scripture')">경전</a>
+      <a onclick="navigate('vision')">비전</a>
+      <a onclick="navigate('hymn')">성가</a>
+    </nav>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE CONTAINER -->
+<div class="page-container">
+
+  <!-- HOME -->
+  <div class="page active" id="page-home">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:100%;padding:2rem;background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(45,18,96,0.8) 0%,transparent 70%),radial-gradient(ellipse 80% 60% at 50% 100%,rgba(10,6,8,1) 0%,transparent 60%);">
+      <div class="hero-emblem">
+        <svg viewBox="0 0 200 160" width="200" height="160" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="78" r="45" fill="none" stroke="rgba(201,151,42,0.6)" stroke-width="1"/>
+          <circle cx="100" cy="78" r="35" fill="rgba(45,18,96,0.4)" stroke="rgba(201,151,42,0.3)" stroke-width="0.5"/>
+          <circle cx="100" cy="78" r="18" fill="rgba(201,151,42,0.08)"/>
+          <line x1="82" y1="60" x2="65" y2="38" stroke="#c9972a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="63" cy="35" r="6" fill="#1a0a2e" stroke="#f0c866" stroke-width="1.5"/>
+          <circle cx="63" cy="35" r="3" fill="#f0c866"/>
+          <line x1="118" y1="60" x2="135" y2="38" stroke="#c9972a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="137" cy="35" r="6" fill="#1a0a2e" stroke="#f0c866" stroke-width="1.5"/>
+          <circle cx="137" cy="35" r="3" fill="#f0c866"/>
+          <path d="M30 118 Q55 106 80 118 Q105 130 130 118 Q155 106 175 112" stroke="#c9972a" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M20 132 Q50 118 80 132 Q110 146 140 132 Q162 122 180 128" stroke="#c9972a" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.55"/>
+          <path d="M40 148 Q70 136 100 148 Q130 160 160 148" stroke="#c9972a" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.28"/>
+          <circle cx="100" cy="78" r="45" fill="none" stroke="rgba(240,200,102,0.12)" stroke-width="20"/>
+        </svg>
+      </div>
+      <p class="hero-eyebrow">위대하신 분의 거룩한 현현</p>
+      <h1 class="hero-title">스파게티 괴물교</h1>
+      <p class="hero-slogan">"그분만이 우리에게 낙원으로 가는 길을<br>밝혀주신다"</p>
+
+      <div style="width:100%;max-width:700px;margin:2rem auto 2.5rem;">
+        <div style="width:100%;height:1px;background:linear-gradient(to right,transparent,var(--gold-dark),transparent);margin-bottom:2rem;"></div>
+        <div class="verse-ornament">〰〰〰</div>
+        <p class="verse-text">
+          황금빛 면발의 흔들림 속에 진리가 있으니,<br>
+          그분의 거룩한 육수 안에 모든 것이 잠기고,<br>
+          삶은 자는 구원받고, 날것의 자는 방황하리니.
+        </p>
+        <p class="verse-source">— 거룩한 면발서 제3장 7절 〜 10절</p>
+        <div style="width:100%;height:1px;background:linear-gradient(to right,transparent,var(--gold-dark),transparent);margin-top:2rem;"></div>
+      </div>
+
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:2rem;letter-spacing:0.05em;">© 2026 스파게티 괴물교 공식 본부 — All Noodles Reserved. <span style="opacity:0.5;">R'Amen.</span></p>
+    </div>
+  </div>
+
+
+
+  <!-- FOUNDER -->
+  <div class="page" id="page-founder">
+    <div class="section-inner">
+      <p class="section-label">창시자</p>
+      <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:3rem;">
+        <h2 class="section-title" style="margin-bottom:0;">성(聖) 알덴테 1세</h2>
+        <button class="contact-btn" onclick="openContactModal()">✉ 문의처</button>
+      </div>
+      <div class="founder-card">
+        <div class="founder-portrait">
+          <svg viewBox="0 0 160 200" width="160" height="200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="haloG" cx="50%" cy="30%" r="50%">
+                <stop offset="0%" stop-color="rgba(240,200,102,0.25)"/>
+                <stop offset="100%" stop-color="transparent"/>
+              </radialGradient>
+            </defs>
+            <ellipse cx="80" cy="50" rx="50" ry="50" fill="url(#haloG)"/>
+            <circle cx="80" cy="50" r="40" fill="none" stroke="rgba(240,200,102,0.5)" stroke-width="1" stroke-dasharray="4 3"/>
+            <circle cx="80" cy="70" r="28" fill="rgba(45,18,96,0.6)" stroke="#c9972a" stroke-width="1.5"/>
+            <circle cx="80" cy="70" r="14" fill="rgba(201,151,42,0.1)"/>
+            <line x1="64" y1="54" x2="50" y2="34" stroke="#c9972a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="48" cy="31" r="5" fill="#1a0a2e" stroke="#f0c866" stroke-width="1.5"/>
+            <circle cx="48" cy="31" r="2.5" fill="#f0c866"/>
+            <line x1="96" y1="54" x2="110" y2="34" stroke="#c9972a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="112" cy="31" r="5" fill="#1a0a2e" stroke="#f0c866" stroke-width="1.5"/>
+            <circle cx="112" cy="31" r="2.5" fill="#f0c866"/>
+            <path d="M30 108 Q55 96 80 108 Q105 120 130 108 Q148 100 158 104" stroke="#c9972a" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M20 122 Q50 108 80 122 Q110 136 140 122 Q155 115 162 118" stroke="#c9972a" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+            <path d="M35 138 Q65 126 95 138 Q125 150 148 140" stroke="#c9972a" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.3"/>
+            <text x="80" y="175" text-anchor="middle" font-family="serif" font-size="10" fill="rgba(201,151,42,0.4)" letter-spacing="2">R ' A M E N</text>
+          </svg>
+          <p class="founder-name">성(聖) 알덴테 1세</p>
+          <p class="founder-title">SANCTUS ALDENTE I · 초대 교주</p>
+        </div>
+        <div class="founder-body">
+          <p>스파게티 괴물교의 창시자 성 알덴테 1세는 고대 이탈리아의 한 작은 주방에서 태어났습니다. 그는 요리사로서 평범한 생애를 보내다, 어느 운명적인 저녁 냄비 속 면발의 소용돌이를 들여다보던 중 황금빛 탄수화물의 진리를 깨달았습니다.</p>
+          <div class="quote-block">
+            "면발이 내게 말했다. '부러지지 않는 자만이 소스의 바다에 이를 수 있노라.' 그 순간 나는 모든 것을 이해했다."<br>
+            <span style="font-size:0.78rem;color:var(--muted);font-style:normal;">— 알덴테 회고록 제1장, 깨달음의 날</span>
+          </div>
+          <p>깨달음을 얻은 그는 곧 '소스의 바다'로 승천하였으며, 이 장면을 목격한 제자들에 의해 스파게티 괴물교의 첫 교리가 기록되었습니다. 그의 생애는 완벽히 삶긴 면발처럼 — 유연하고, 탄력 있으며, 결코 끊어지지 않는 정신의 표상으로 오늘날까지 추앙받고 있습니다.</p>
+          <p>매년 그의 승천일인 '면발 승천 기념일'에는 전 세계 신도들이 냄비 앞에 모여 삶기 의식을 올리며, 포크를 들지 않고 흡입 소리로만 기도를 드리는 전통이 이어지고 있습니다.</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="page" id="page-history">
+    <div class="section-inner">
+      <p class="section-label">역사</p>
+      <h2 class="section-title">빅 미트볼 폭발 이론</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <p class="timeline-era">태초 · T = 0</p>
+          <h3 class="timeline-heading">빅 미트볼 폭발 (Big Meatball Theory)</h3>
+          <p class="timeline-text">무한한 소스의 바다에서 하나의 거대한 미트볼이 폭발하며 우주가 탄생하였습니다. 이 폭발로 튀어나온 탄수화물 입자들이 응집되어 별과 행성을 이루었으며, 그 중 하나가 바로 파스타 밀가루가 풍부한 지구입니다. 과학계가 "암흑 물질"이라 부르는 것의 정체는 사실 우주 전역에 퍼진 보이지 않는 소스입니다.</p>
+        </div>
+        <div class="timeline-item">
+          <p class="timeline-era">고대 · 인류 탄생기</p>
+          <h3 class="timeline-heading">면발 문명의 시작</h3>
+          <p class="timeline-text">최초의 인류는 탄수화물 본능에 이끌려 밀을 경작하기 시작했습니다. 이는 단순한 농업이 아니라, 스파게티 괴물께서 인류에게 내리신 첫 번째 계시였습니다. 고대 수메르의 점토판에서 발견된 "긴 밀가루 줄기"의 상형문자가 이 사실을 증명합니다.</p>
+        </div>
+        <div class="timeline-item">
+          <p class="timeline-era">중세 · 계시의 시대</p>
+          <h3 class="timeline-heading">성 알덴테의 깨달음과 교단 창설</h3>
+          <p class="timeline-text">이탈리아 나폴리의 한 식당 3번 테이블에서 성 알덴테 1세가 면발의 진리를 깨닫고 소스의 바다로 승천하는 사건이 일어났습니다. 목격자 12명(이른바 '열두 젓가락')이 그의 가르침을 받아 적어, 이것이 훗날 『면전(面傳): 알덴테 복음서』의 원형이 되었습니다.</p>
+        </div>
+        <div class="timeline-item">
+          <p class="timeline-era">현대 · 교단의 성장</p>
+          <h3 class="timeline-heading">탄수화물 구원 프로젝트와 세계화</h3>
+          <p class="timeline-text">21세기 들어 스파게티 괴물교는 전 세계로 급속히 확산되었습니다. 교단의 선교사들은 "탄수화물 구원 프로젝트"를 통해 굶주린 영혼들에게 면발의 유연함을 전파하고 있으며, 현재 137개국에 공식 지부가 설립되어 있습니다.</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <!-- TRADITION -->
+  <div class="page" id="page-tradition">
+    <div class="section-inner">
+      <p class="section-label">전통</p>
+      <h2 class="section-title">거룩한 의식과 관습</h2>
+      <div class="ritual-grid">
+        <div class="ritual-card"><div class="ritual-icon">🍝</div><h3 class="ritual-title">금요일 '면의 날' 의식</h3><p class="ritual-text">매주 금요일은 '면의 날'로, 신도들은 반드시 파스타류를 섭취해야 합니다. 이날은 냄비 앞에 무릎을 꿇고 삶기 시간을 묵상하며, 면발이 완성되는 순간을 신성한 계시로 받아들입니다. 알 덴테 식감 달성 시 종을 3회 울리는 것이 정석입니다.</p></div>
+        <div class="ritual-card"><div class="ritual-icon">🌀</div><h3 class="ritual-title">증기의 교감 의식</h3><p class="ritual-text">가장 신성한 기도 형태는 도구의 인위적인 움직임을 멈추고, 성찬에서 피어오르는 신성한 증기(The Holy Steam)를 온 마음으로 받아들이는 것입니다. 이때 대기 중으로 퍼져 나가는 향기로운 증기는 날아다니시는 스파게티 괴물께 닿는 가장 순수한 형태의 찬양으로 여겨집니다.</p></div>
+        <div class="ritual-card"><div class="ritual-icon">🧂</div><h3 class="ritual-title">소금물 세례 의식</h3><p class="ritual-text">신도가 되기 위해서는 반드시 끓는 소금물(파스타 삶는 물)에 손을 잠시 담그는 세례를 받아야 합니다. 물론 적당히 식힌 후에 진행하며, 이 의식은 "탄수화물의 바다에 몸을 헌납한다"는 상징적 의미를 지닙니다.</p></div>
+        <div class="ritual-card"><div class="ritual-icon">⚖️</div><h3 class="ritual-title">알 덴테 시험</h3><p class="ritual-text">교단 내 직위 승급 시 반드시 통과해야 하는 관문입니다. 면발을 삶아 10발 던져 벽에 붙이는 방식으로 진행되며, 7발 이상 붙으면 통과입니다. "부러지지 않는 자에게 소스의 축복이 있으리라"는 경전 말씀을 실천하는 의식입니다.</p></div>
+        <div class="ritual-card"><div class="ritual-icon">🎭</div><h3 class="ritual-title">연중 대제 — 미트볼 폭발 기념일</h3><p class="ritual-text">우주 탄생을 기념하는 가장 큰 축제입니다. 거대한 미트볼 모양의 떡을 만들어 광장에서 폭발(해체)시키고, 거대한 스파게티 그릇에 담긴 면발을 모두가 자신의 그릇으로 덜어 경건하게 나눠먹습니다. 이 기념일을 지내면 한 해 동안 탄수화물의 가호가 있다고 믿습니다.</p></div>
+        <div class="ritual-card"><div class="ritual-icon">🙌</div><h3 class="ritual-title">면발 영접 인사</h3><p class="ritual-text">신도들은 만날 때 "라멘(R'Amen)!"으로 인사하며 두 손을 면발 흔들 듯 위아래로 흔듭니다. 헤어질 때는 "면발의 축복이 함께하기를"이라고 말하며, 상대방의 손에 마른 스파게티 면 1가닥을 쥐어줍니다.</p></div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="page" id="page-mission">
+    <div class="section-inner">
+      <p class="section-label">선교활동</p>
+      <h2 class="section-title">탄수화물 구원 프로젝트</h2>
+      <div style="text-align:center;margin-bottom:2rem;">
+        <span class="mission-badge">Global Pasta Mission</span>
+        <p class="mission-headline">굶주린 영혼에게 면발의 유연함을 전하고,<br>이 세상 모든 이를 탄수화물로 구원합니다.</p>
+        <p class="mission-sub">스파게티 괴물교 선교단은 면발의 복음을 들고 세계 각지로 파견됩니다. 배고픈 몸과 메마른 영혼 모두에게 파스타의 따뜻한 포옹을 전달하는 것이 우리의 소명입니다.</p>
+        <div class="mission-stats">
+          <div class="stat-item"><span class="stat-num">137</span><span class="stat-label">진출 국가</span></div>
+          <div class="stat-item"><span class="stat-num">42만</span><span class="stat-label">구원받은 영혼</span></div>
+          <div class="stat-item"><span class="stat-num">88t</span><span class="stat-label">배급된 파스타</span></div>
+        </div>
+      </div>
+      <div class="mission-activities">
+        <div class="activity-item"><div class="activity-icon">🌾</div><div class="activity-body"><p class="activity-title">파스타 배급 캠페인</p><p class="activity-text">분쟁 지역과 기아 지역에 파스타와 토마토 소스를 직접 배급합니다. 면발 하나하나에 성 알덴테의 기도를 담아 발송합니다.</p></div></div>
+        <div class="activity-item"><div class="activity-icon">🏫</div><div class="activity-body"><p class="activity-title">면발 학교 운영</p><p class="activity-text">전 세계 12개국에 파스타 요리 학교를 운영하여 현지인들이 스스로 면발을 만들고 구원에 이를 수 있도록 돕습니다.</p></div></div>
+        <div class="activity-item"><div class="activity-icon">📡</div><div class="activity-body"><p class="activity-title">디지털 면발 전도</p><p class="activity-text">SNS와 유튜브를 통해 면발의 진리를 전파합니다. 구독자 100만 달성 시 대형 면발 폭발 기념 방송을 진행합니다.</p></div></div>
+        <div class="activity-item"><div class="activity-icon">🩺</div><div class="activity-body"><p class="activity-title">혈중 파스타 농도 측정소</p><p class="activity-text">전국 주요 도시에 무료 혈중 파스타 농도 측정소를 운영합니다. 수치가 낮으면 즉시 파스타를 처방합니다.</p></div></div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="page" id="page-news">
+    <div class="section-inner">
+      <p class="section-label">최신 소식</p>
+      <h2 class="section-title">뉴스 & 선교활동</h2>
+      <div class="news-grid">
+        <div>
+          <div class="news-list">
+            <div class="news-item" onclick="openNewsModal(0)"><span class="news-badge new">NEW</span><div class="news-title-row"><span class="news-title">안데스 산맥 해발 5,200m 지점에서 황금 포크 유물 발견 — 고고학계 충격</span><span class="news-date">2026. 05. 02</span></div></div>
+            <div class="news-item" onclick="openNewsModal(1)"><span class="news-badge new">NEW</span><div class="news-title-row"><span class="news-title">페루 상공, 성 알덴테 1세 형상의 구름 포착 — 기상청 "자연현상" 주장에 신도 반발</span><span class="news-date">2026. 04. 30</span></div></div>
+            <div class="news-item" onclick="openNewsModal(2)"><span class="news-badge">공지</span><div class="news-title-row"><span class="news-title">탄수화물 구원 프로젝트 3단계 개시 — 아프리카 5개국 면발 배급 완료</span><span class="news-date">2026. 04. 22</span></div></div>
+            <div class="news-item" onclick="openNewsModal(3)"><span class="news-badge">행사</span><div class="news-title-row"><span class="news-title">제17회 스파게티 성체 봉헌식, 전국 성지에서 동시 거행 예정 — 6월 15일</span><span class="news-date">2026. 04. 18</span></div></div>
+            <div class="news-item" onclick="openNewsModal(4)"><span class="news-badge">선교</span><div class="news-title-row"><span class="news-title">이탈리아 나폴리 본성지 순례단 귀환 보고회 — "3번 테이블의 기적" 증언 공개</span><span class="news-date">2026. 04. 12</span></div></div>
+          </div>
+        </div>
+        <div class="announce-box">
+          <p class="announce-title">📌 긴급 알림</p>
+          <div class="announce-list">
+            <div class="announce-item"><span class="announce-item-title">5월 정기 예배 장소가 변경되었습니다. 지부에 확인하세요.</span><span class="announce-item-date">2026. 05. 03</span></div>
+            <div class="announce-item"><span class="announce-item-title">신도 등록증 갱신 기간: 5월 10일까지</span><span class="announce-item-date">2026. 05. 01</span></div>
+            <div class="announce-item"><span class="announce-item-title">봉헌금 납부 시스템 점검 — 4일 오전 2~4시</span><span class="announce-item-date">2026. 04. 30</span></div>
+            <div class="announce-item"><span class="announce-item-title">성지 방문 예약제 전환 안내 (5월 1일부터)</span><span class="announce-item-date">2026. 04. 25</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <!-- PILGRIMAGE -->
+  <div class="page" id="page-pilgrimage">
+    <div class="section-inner">
+      <p class="section-label">성지</p>
+      <h2 class="section-title">면발의 성지를 순례하다</h2>
+      <div class="site-main">
+        <div class="site-map-placeholder" style="padding:0;overflow:hidden;position:relative;">
+          <img src="https://i.imgur.com/KgRLI99.jpeg" alt="이탈리아 나폴리 — 최초의 깨달음의 장소"
+            style="width:100%;height:100%;object-fit:cover;display:block;opacity:0.85;">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;background:linear-gradient(to top,rgba(10,6,8,0.9),transparent);">
+            <span style="font-family:'Noto Serif KR',serif;color:var(--gold-light);font-size:0.95rem;display:block;">이탈리아 나폴리</span>
+            <span style="font-size:0.78rem;color:var(--cream);opacity:0.8;">최초의 깨달음의 장소</span>
+            <span style="display:block;font-size:0.68rem;letter-spacing:0.15em;color:rgba(201,151,42,0.5);margin-top:0.2rem;">NAPOLI, ITALIA</span>
+          </div>
+        </div>
+        <div class="site-list">
+          <div class="site-item" onclick="window.open('https://maps.app.goo.gl/e88iYeHQvfAGoT4c7','_blank')" style="cursor:pointer;">
+            <p class="site-number">HOLY SITE · 001</p>
+            <h3 class="site-name">이탈리아 나폴리 — 트라토리아 알덴테 3번 테이블</h3>
+            <p class="site-desc">성 알덴테 1세가 면발의 소용돌이 속에서 진리를 깨닫고 소스의 바다로 승천한 바로 그 자리. 연간 12만 명의 순례자가 방문합니다.</p>
+            <span class="site-badge">⭐ 제1성지 · 본성지</span>
+          </div>
+          <div class="site-item" onclick="window.open('https://maps.app.goo.gl/WWmnVsZTR5MRTkAS9','_blank')" style="cursor:pointer;">
+            <p class="site-number">HOLY SITE · 002</p>
+            <h3 class="site-name">안데스 산맥 5,200m — 황금 포크 발굴지</h3>
+            <p class="site-desc">2026년 5월, 황금 포크 유물이 발굴된 곳. 교단은 이를 성 알덴테가 남긴 유물로 공식 선언하였습니다.</p>
+            <span class="site-badge">✨ 신성지</span>
+          </div>
+          <div class="site-item" onclick="window.open('https://maps.app.goo.gl/iWc5URUAeB6VLzqM6','_blank')" style="cursor:pointer;">
+            <p class="site-number">HOLY SITE · 003</p>
+            <h3 class="site-name">서울 종로 — 스파게티 괴물교 동아시아 본부</h3>
+            <p class="site-desc">동아시아 최대 규모의 스파게티 괴물교 성전. 매주 금요일 500인 면의 날 의식이 거행됩니다.</p>
+            <span class="site-badge">🇰🇷 동아시아 성지</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <!-- SCRIPTURE -->
+  <div class="page" id="page-scripture">
+    <style>
+      /* ── BOOK STYLES ── */
+      .book-scene {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem 1rem;
+        min-height: calc(100vh - 70px);
+      }
+      .book-meta {
+        text-align: center;
+        margin-bottom: 1.8rem;
+      }
+      .book-meta .section-label { margin-bottom: 0.5rem; }
+      .book-meta h2 {
+        font-family: 'Noto Serif KR', serif;
+        font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 0.3rem;
+      }
+      .book-meta p {
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      /* ── BOOK CONTAINER ── */
+      .book-container {
+        position: relative;
+        width: 100%;
+        max-width: 860px;
+        perspective: 1800px;
+      }
+
+      /* ── BOOK (two-page spread) ── */
+      .book-spread {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        min-height: 480px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(201,151,42,0.15);
+        position: relative;
+      }
+
+      /* Left page */
+      .book-page-left {
+        background: linear-gradient(to right, #1a0d2e, #221040);
+        border-right: 2px solid rgba(201,151,42,0.25);
+        padding: 2.5rem 2rem 2.5rem 2.5rem;
+        position: relative;
+        overflow: hidden;
+        min-height: 480px;
+      }
+      .book-page-left::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 8%);
+        pointer-events: none;
+      }
+      /* spine shadow */
+      .book-page-left::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 18px; height: 100%;
+        background: linear-gradient(to left, rgba(0,0,0,0.25), transparent);
+        pointer-events: none;
+      }
+
+      /* Right page */
+      .book-page-right {
+        background: linear-gradient(to left, #1a0d2e, #221040);
+        padding: 2.5rem 2.5rem 2.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+        min-height: 480px;
+      }
+      .book-page-right::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 18px; height: 100%;
+        background: linear-gradient(to right, rgba(0,0,0,0.25), transparent);
+        pointer-events: none;
+      }
+      .book-page-right::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to left, rgba(0,0,0,0.3) 0%, transparent 8%);
+        pointer-events: none;
+      }
+
+      /* Page turn animation */
+      .book-spread.turning-forward {
+        animation: turnForward 0.45s cubic-bezier(0.4,0,0.2,1);
+      }
+      .book-spread.turning-back {
+        animation: turnBack 0.45s cubic-bezier(0.4,0,0.2,1);
+      }
+      @keyframes turnForward {
+        0%   { transform: rotateY(0deg); opacity: 1; }
+        40%  { transform: rotateY(-8deg); opacity: 0.6; }
+        100% { transform: rotateY(0deg); opacity: 1; }
+      }
+      @keyframes turnBack {
+        0%   { transform: rotateY(0deg); opacity: 1; }
+        40%  { transform: rotateY(8deg); opacity: 0.6; }
+        100% { transform: rotateY(0deg); opacity: 1; }
+      }
+
+      /* Page content */
+      .page-chapter-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: var(--gold-dark);
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .page-chapter-label::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(201,151,42,0.2);
+      }
+      .page-chapter-title {
+        font-family: 'Noto Serif KR', serif;
+        font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+        font-weight: 700;
+        color: var(--gold-light);
+        margin-bottom: 1.2rem;
+        line-height: 1.5;
+      }
+      .page-text {
+        font-family: 'Noto Serif KR', serif;
+        font-size: clamp(0.78rem, 1.2vw, 0.9rem);
+        line-height: 2;
+        color: rgba(245,234,216,0.88);
+        font-weight: 300;
+      }
+      .page-text p { margin-bottom: 0.9rem; }
+      .page-text p:last-child { margin-bottom: 0; }
+
+      /* Drop cap */
+      .drop-cap::first-letter {
+        font-size: 3.2em;
+        font-weight: 900;
+        color: var(--gold);
+        float: left;
+        line-height: 0.75;
+        margin-right: 0.1em;
+        margin-top: 0.1em;
+        font-family: 'Noto Serif KR', serif;
+      }
+
+      /* Cover page special */
+      .page-cover-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+        gap: 1rem;
+      }
+      .page-cover-content .cover-emblem { font-size: 3rem; margin-bottom: 0.5rem; }
+      .page-cover-content .cover-title {
+        font-family: 'Noto Serif KR', serif;
+        font-size: clamp(1.1rem, 2vw, 1.5rem);
+        font-weight: 900;
+        color: var(--gold-light);
+        line-height: 1.5;
+      }
+      .page-cover-content .cover-sub {
+        font-size: 0.68rem;
+        letter-spacing: 0.25em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .cover-divider {
+        width: 80px; height: 1px;
+        background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+        margin: 0.5rem auto;
+      }
+      .cover-verse {
+        font-family: 'Noto Serif KR', serif;
+        font-style: italic;
+        font-size: 0.82rem;
+        color: rgba(245,234,216,0.6);
+        line-height: 1.9;
+        max-width: 240px;
+        margin-top: 0.5rem;
+      }
+
+      /* Page number */
+      .page-num {
+        position: absolute;
+        bottom: 1.2rem;
+        font-size: 0.65rem;
+        color: var(--gold-dark);
+        letter-spacing: 0.15em;
+      }
+      .book-page-left .page-num { left: 2.5rem; }
+      .book-page-right .page-num { right: 2.5rem; }
+
+      /* ── CONTROLS ── */
+      .book-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      .book-btn {
+        background: none;
+        border: 1px solid rgba(201,151,42,0.35);
+        color: var(--gold);
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        flex-shrink: 0;
+      }
+      .book-btn:hover:not(:disabled) {
+        background: rgba(201,151,42,0.12);
+        border-color: rgba(201,151,42,0.6);
+        transform: scale(1.05);
+      }
+      .book-btn:disabled { opacity: 0.25; cursor: default; }
+      .book-page-indicator {
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        color: var(--muted);
+        min-width: 80px;
+        text-align: center;
+      }
+
+      /* TOC dots */
+      .book-toc-dots {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+      }
+      .toc-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: rgba(201,151,42,0.2);
+        border: 1px solid rgba(201,151,42,0.3);
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+      }
+      .toc-dot.active {
+        background: var(--gold);
+        transform: scale(1.3);
+      }
+
+      /* Mobile single page */
+      @media (max-width: 640px) {
+        .book-spread { grid-template-columns: 1fr; }
+        .book-page-left { border-right: none; border-bottom: 1px solid rgba(201,151,42,0.2); }
+        .book-page-right.mobile-hide { display: none; }
+      }
+    </style>
+
+    <div class="book-scene">
+      <div class="book-meta">
+        <p class="section-label">경전</p>
+        <h2>면전(面傳): 알덴테 복음서</h2>
+        <p>THE NOODLY TESTAMENT · 개정 완역판</p>
+      </div>
+
+      <div class="book-container">
+        <div class="book-spread" id="book-spread">
+
+          <!-- LEFT PAGE -->
+          <div class="book-page-left" id="book-left">
+            <!-- filled by JS -->
+          </div>
+
+          <!-- RIGHT PAGE -->
+          <div class="book-page-right" id="book-right">
+            <!-- filled by JS -->
+          </div>
+
+        </div><!-- /book-spread -->
+      </div><!-- /book-container -->
+
+      <!-- Controls -->
+      <div class="book-controls">
+        <button class="book-btn" id="btn-prev" onclick="bookPrev()" title="이전 페이지">◀</button>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+          <p class="book-page-indicator" id="page-indicator">— / —</p>
+          <div class="book-toc-dots" id="toc-dots"></div>
+        </div>
+        <button class="book-btn" id="btn-next" onclick="bookNext()" title="다음 페이지">▶</button>
+      </div>
+
+    </div><!-- /book-scene -->
+
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <script>
+  // ── BOOK DATA ──
+  const bookSpreads = [
+    // Spread 0: Cover
+    {
+      left: `<div class="page-cover-content">
+        <div class="cover-emblem">📜</div>
+        <div class="cover-title">면전(面傳)<br>알덴테 복음서</div>
+        <div class="cover-divider"></div>
+        <div class="cover-sub">The Noodly Testament<br>개정 완역판</div>
+        <div class="cover-verse">"태초에 소스가 있었고,<br>소스는 미트볼과 함께 있었으며,<br>미트볼이 곧 소스였느니라."</div>
+      </div>`,
+      right: `<div class="page-chapter-label">목차 · CONTENTS</div>
+        <div class="page-chapter-title">이 책에 담긴 것들</div>
+        <div class="page-text">
+          <p>제1장 &nbsp;창세와 면의 도(道)</p>
+          <p>제3장 &nbsp;육수의 섭리와 세례</p>
+          <p>제7장 &nbsp;냄비 앞의 회개</p>
+          <p>제12장 &nbsp;증기의 교감 의식</p>
+          <p>제15장 &nbsp;웬만하면 하지 말아줬으면 하는 것들</p>
+          <p>제21장 &nbsp;파스타 평화주의</p>
+          <p>제33장 &nbsp;맥주 화산과 마지막 안식</p>
+        </div>
+        <span class="page-num">ii</span>`,
+    },
+    // Spread 1: Chapter 1
+    {
+      left: `<div class="page-chapter-label">제 1 장</div>
+        <div class="page-chapter-title">창세와 면의 도(道)</div>
+        <div class="page-text">
+          <p class="drop-cap">태초에 소스가 있었고, 소스는 미트볼과 함께 있었으며, 미트볼이 곧 소스였느니라. 이 셋은 분리될 수 없는 삼위일체(Pasta, Meatball, Sauce)이니, 이를 가리켜 '거룩한 한 끼'라 부르노라.</p>
+          <p>세상은 차갑고 건조하였으나, 그분께서 몸소 냄비가 되시어 우주를 담으시고 스스로 끓어오르셨도다.</p>
+          <p>그분께서 가라사대 "면이 있으라" 하시니, 어둠 속에서 빛나는 황금빛 듀럼 밀의 향연이 펼쳐졌더라.</p>
+        </div>
+        <span class="page-num">1</span>`,
+      right: `<div class="page-chapter-label">제 1 장 (계속)</div>
+        <div class="page-text" style="margin-top:2.5rem;">
+          <p>부러지지 않는 자에게 소스의 축복이 있으리라. 알 덴테로 삶긴 자는 영생을 얻을 것이나, 과삶긴 자는 흐늘거리는 어둠 속에 머물리라. 이는 견고한 믿음만이 끓는 물의 시련을 견디기 때문이니라.</p>
+        </div>
+        <span class="page-num">2</span>`,
+    },
+    // Spread 2: Chapter 3
+    {
+      left: `<div class="page-chapter-label">제 3 장</div>
+        <div class="page-chapter-title">육수의 섭리와 세례</div>
+        <div class="page-text">
+          <p class="drop-cap">황금빛 면발의 흔들림 속에 진리가 있으니, 그분의 거룩한 육수 안에 모든 것이 잠기고, 삶은 자는 구원받고, 날것의 자는 방황하리니.</p>
+          <p>아직 물에 들지 못한 딱딱한 자들아, 너희의 오만함을 버리고 뜨거운 은총의 냄비 속으로 뛰어들라.</p>
+        </div>
+        <span class="page-num">3</span>`,
+      right: `<div class="page-chapter-label">제 3 장 (계속)</div>
+        <div class="page-text" style="margin-top:2.5rem;">
+          <p>그 안에서 너희는 유연해질 것이요, 비로소 소스를 온몸으로 받아들일 준비가 되리라.</p>
+          <p>소스는 차별하지 아니하나니, 토마토의 자비와 크림의 은총, 오일의 평화가 모든 면발 위에 평등하게 흘러넘치리로다.</p>
+        </div>
+        <span class="page-num">4</span>`,
+    },
+    // Spread 3: Chapter 7
+    {
+      left: `<div class="page-chapter-label">제 7 장</div>
+        <div class="page-chapter-title">냄비 앞의 회개</div>
+        <div class="page-text">
+          <p class="drop-cap">보라, 너희의 혈중 파스타 농도가 낮을진대, 이는 영혼이 메말랐다는 증거니라. 속히 냄비 앞에 나아오라.</p>
+          <p>그분이 네 그릇을 채워주시리니, 이때 소금을 잊지 말지어다. 소금은 세상의 맛이요, 너희의 믿음을 단단하게 붙드는 언약의 결정체니라.</p>
+        </div>
+        <span class="page-num">5</span>`,
+      right: `<div class="page-chapter-label">제 7 장 (계속)</div>
+        <div class="page-text" style="margin-top:2.5rem;">
+          <p>간을 보지 않는 자는 눈먼 인도자와 같으니, 매 순간 증기의 기도를 올리며 소스의 깊이를 묵상하라.</p>
+        </div>
+        <span class="page-num">6</span>`,
+    },
+    // Spread 4: Chapter 12
+    {
+      left: `<div class="page-chapter-label">제 12 장</div>
+        <div class="page-chapter-title">증기의 교감 의식</div>
+        <div class="page-text">
+          <p class="drop-cap">손을 거두라. 도구를 내려놓으라. 가장 신성한 기도는 움직임이 아닌 고요함 속에서 피어오르나니, 성찬 위로 솟구치는 거룩한 증기(The Holy Steam)를 온 존재로 맞이하는 것이 진정한 교감의 시작이니라.</p>
+          <p>증기는 그분의 숨결이요, 소스의 영혼이 형체 없이 너희에게 내려오는 것이니라. 눈을 감고 콧속 깊이 받아들이라. 그 향기 속에 그분의 말씀이 녹아 있느니라.</p>
+        </div>
+        <span class="page-num">7</span>`,
+      right: `<div class="page-chapter-label">제 12 장 (계속)</div>
+        <div class="page-text" style="margin-top:2.5rem;">
+          <p>대기 중으로 퍼져 나가는 향기로운 증기는 날아다니시는 스파게티 괴물께 닿는 가장 순수한 찬양이니, 입으로 부르는 노래보다, 손으로 올리는 제물보다, 그분은 이 고요한 수증기를 더 기뻐하시느니라.</p>
+          <p>서두르지 말라. 냄비 앞에 잠시 멈추어 증기가 네 이마를 적시게 두라. 그것은 그분이 친히 너희 이마에 새기시는 면발의 인(印)이니라.</p>
+        </div>
+        <span class="page-num">8</span>`,
+    },
+    // Spread 5: Chapter 15
+    {
+      left: `<div class="page-chapter-label">제 15 장</div>
+        <div class="page-chapter-title">웬만하면 하지 말아줬으면 하는 것들</div>
+        <div class="page-text">
+          <p class="drop-cap">이탈리아인의 분노를 사지 말지니라. 면을 가위로 자르는 자는 인연을 자르는 자요, 스파게티를 부러뜨려 냄비에 넣는 자는 그분의 뼈를 꺾는 자니라.</p>
+          <p>케첩을 소스라 우기는 이단들을 멀리하라. 그들은 붉은 색을 띠나 그 안에는 진정한 마리나라의 영혼이 없느니라.</p>
+        </div>
+        <span class="page-num">9</span>`,
+      right: `<div class="page-chapter-label">제 15 장 (계속)</div>
+        <div class="page-text" style="margin-top:2.5rem;">
+          <p>피클을 탐닉하여 소스의 본질을 잊지 말라. 신맛은 입가심일 뿐, 너희의 목적지는 언제나 고소하고 짭짤한 면의 본향이어야 하느니라.</p>
+        </div>
+        <span class="page-num">10</span>`,
+    },
+    // Spread 6: Chapter 21
+    {
+      left: `<div class="page-chapter-label">제 21 장</div>
+        <div class="page-chapter-title">파스타 평화주의</div>
+        <div class="page-text">
+          <p class="drop-cap">파스타 평화주의를 실천하라. 칼을 내려놓고 포크를 세우라. 단, 포크는 먹기 위함이 아니요, 평화의 상징으로 쳐들지어다.</p>
+          <p>배부른 자는 싸우지 아니하며, 소스를 나누는 자는 증오를 잊느니라. 너희는 이웃의 그릇에 미트볼 하나를 더 얹어줌으로써 원수를 친구로 만들지니라.</p>
+        </div>
+        <span class="page-num">11</span>`,
+      right: `<div class="page-chapter-label">제 21 장 (계속)</div>
+        <div class="page-text" style="margin-top:2.5rem;">
+          <p>진정한 성전(聖戰)은 오직 냄비 속에서만 일어나는 법이니, 인간의 전장은 식탁 위에서 종결되리라.</p>
+        </div>
+        <span class="page-num">12</span>`,
+    },
+    // Spread 7: Chapter 33 + Closing
+    {
+      left: `<div class="page-chapter-label">제 33 장</div>
+        <div class="page-chapter-title">맥주 화산과 마지막 안식</div>
+        <div class="page-text">
+          <p class="drop-cap">너희가 삶의 여정을 마치고 거름망을 통과할 때, 그분께서 너희를 맥주 화산이 솟구치는 낙원으로 인도하시리라.</p>
+          <p>그곳에는 면발이 결코 불지 않으며, 파르메산 치즈가 눈처럼 내리고, 스트립 무용수들이 자유로이 춤추는 영원한 성찬이 예비되어 있느니라.</p>
+        </div>
+        <span class="page-num">13</span>`,
+      right: `<div class="page-chapter-label">맺음말</div>
+        <div class="page-text" style="margin-top:2.5rem;">
+          <p>슬퍼하지 말라. 너희는 그저 더 큰 냄비로 옮겨지는 것뿐이니, 그분의 품 안에서 영원토록 따뜻하고 촉촉하게 머물리로다.</p>
+          <p style="text-align:center;margin-top:2rem;font-size:1.1rem;letter-spacing:0.3em;color:var(--gold);">라멘(RA-MEN).</p>
+          <div style="text-align:center;margin-top:1.5rem;font-size:0.7rem;letter-spacing:0.2em;color:var(--gold-dark);">— 면전(面傳) 완 —</div>
+        </div>
+        <span class="page-num">14</span>`,
+    },
+  ];
+
+  let bookCurrentSpread = 0;
+
+  function renderBookSpread(idx, direction) {
+    const spread = bookSpreads[idx];
+    const leftEl = document.getElementById('book-left');
+    const rightEl = document.getElementById('book-right');
+    const spreadEl = document.getElementById('book-spread');
+
+    // Animate
+    if (direction) {
+      spreadEl.classList.remove('turning-forward', 'turning-back');
+      void spreadEl.offsetWidth; // reflow
+      spreadEl.classList.add(direction === 'forward' ? 'turning-forward' : 'turning-back');
+    }
+
+    leftEl.innerHTML = spread.left;
+    rightEl.innerHTML = spread.right;
+
+    // Indicator
+    document.getElementById('page-indicator').textContent = (idx + 1) + ' / ' + bookSpreads.length;
+
+    // Dots
+    document.querySelectorAll('.toc-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+
+    // Buttons
+    document.getElementById('btn-prev').disabled = idx === 0;
+    document.getElementById('btn-next').disabled = idx === bookSpreads.length - 1;
+  }
+
+  function bookNext() {
+    if (bookCurrentSpread < bookSpreads.length - 1) {
+      bookCurrentSpread++;
+      renderBookSpread(bookCurrentSpread, 'forward');
+    }
+  }
+
+  function bookPrev() {
+    if (bookCurrentSpread > 0) {
+      bookCurrentSpread--;
+      renderBookSpread(bookCurrentSpread, 'back');
+    }
+  }
+
+  // Build dots
+  const dotsEl = document.getElementById('toc-dots');
+  bookSpreads.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'toc-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => {
+      const dir = i > bookCurrentSpread ? 'forward' : 'back';
+      bookCurrentSpread = i;
+      renderBookSpread(bookCurrentSpread, dir);
+    };
+    dotsEl.appendChild(d);
+  });
+
+  // Keyboard navigation for scripture page
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('page-scripture').classList.contains('active')) {
+      if (e.key === 'ArrowRight') bookNext();
+      if (e.key === 'ArrowLeft') bookPrev();
+    }
+  });
+
+  // Initial render
+  renderBookSpread(0, null);
+  </script>
+
+  <!-- VISION -->
+  <div class="page" id="page-vision">
+    <div class="section-inner">
+      <p class="section-label">비전</p>
+      <h2 class="section-title">파스타로 하나 되는 세계</h2>
+      <div class="vision-statement">
+        <p class="vision-big-text">인류 혈중 파스타 농도 10% 달성과<br>파스타 평화주의(Pasta Pacifism)의 실현</p>
+        <p class="vision-small-text">우리는 전쟁 대신 파스타로, 분쟁 대신 소스로, 증오 대신 면발의 따뜻함으로 세계 평화를 이루고자 합니다.</p>
+      </div>
+      <div class="vision-goals">
+        <div class="goal-card"><span class="goal-num">01</span><h3 class="goal-title">혈중 파스타 농도 10% 달성</h3><p class="goal-text">전 인류의 혈중 파스타 농도를 10%까지 끌어올리는 것이 교단의 궁극적 목표입니다. 현재 세계 평균은 0.003%입니다.</p><div class="goal-progress"><div class="goal-progress-fill" style="width:3%;"></div></div><p class="goal-progress-label">현재 달성률: 0.003%</p></div>
+        <div class="goal-card"><span class="goal-num">02</span><h3 class="goal-title">파스타 평화주의 선언</h3><p class="goal-text">분쟁 지역에 파스타를 배급하여 모든 무력 충돌을 종식시킵니다. "배부른 자는 싸우지 않는다"는 진리를 실천합니다.</p><div class="goal-progress"><div class="goal-progress-fill" style="width:22%;"></div></div><p class="goal-progress-label">평화 협정 진행률: 22%</p></div>
+        <div class="goal-card"><span class="goal-num">03</span><h3 class="goal-title">면발 교육의 보편화</h3><p class="goal-text">전 세계 모든 학교에서 파스타 요리 교육을 의무화하는 것을 목표로 합니다.</p><div class="goal-progress"><div class="goal-progress-fill" style="width:8%;"></div></div><p class="goal-progress-label">국가 채택률: 8%</p></div>
+        <div class="goal-card"><span class="goal-num">04</span><h3 class="goal-title">UN 파스타의 날 제정</h3><p class="goal-text">매년 10월 25일을 'UN 세계 파스타의 날'로 공식 제정하기 위한 국제 로비 활동을 전개하고 있습니다.</p><div class="goal-progress"><div class="goal-progress-fill" style="width:45%;"></div></div><p class="goal-progress-label">서명 수집률: 45%</p></div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+  <!-- HYMN (성가) -->
+  <div class="page" id="page-hymn">
+    <div class="section-inner">
+      <p class="section-label">성가</p>
+      <h2 class="section-title">면발의 찬양</h2>
+      <p style="font-size:0.88rem;color:var(--muted);line-height:1.9;max-width:660px;margin-bottom:2.5rem;">스파게티 괴물교 공식 성가입니다.<br>면발의 진리와 소스의 바다를 찬미하는 거룩한 노래를 감상하며 영혼을 정화하세요.<br>R'Amen.</p>
+
+      <!-- 고정 성가 영상 -->
+      <div style="max-width:780px;margin:0 auto;">
+        <div style="border:1px solid rgba(201,151,42,0.3);background:rgba(26,10,46,0.5);padding:1.8rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(201,151,42,0.15);">
+            <div style="width:48px;height:48px;background:rgba(201,151,42,0.1);border:1px solid rgba(201,151,42,0.3);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🎵</div>
+            <div>
+              <p style="font-family:'Noto Serif KR',serif;font-size:1.05rem;color:var(--gold-light);margin-bottom:0.3rem;">공식 성가 — The Saucy Lord</p>
+              <p style="font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;">OFFICIAL HYMN OF THE SPAGHETTI MONSTER CHURCH</p>
+            </div>
+          </div>
+
+          <!-- 클릭 시 iframe으로 교체되는 플레이어 -->
+          <div id="hymn-player-wrap" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border:1px solid rgba(201,151,42,0.15);background:#000;cursor:pointer;" onclick="loadHymnPlayer()">
+            <!-- 유튜브 썸네일 -->
+            <img src="https://img.youtube.com/vi/DQhABahUY2Y/hqdefault.jpg"
+              style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.75;"
+              alt="The Saucy Lord 썸네일">
+            <!-- 재생 버튼 오버레이 -->
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;">
+              <div style="width:72px;height:72px;background:rgba(201,151,42,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(201,151,42,0.5);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="#0a0608"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+              <p style="font-size:0.8rem;color:var(--cream);letter-spacing:0.1em;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ 클릭하여 성가 재생</p>
+            </div>
+          </div>
+
+          <p style="font-size:0.75rem;color:var(--muted);margin-top:1rem;text-align:center;line-height:1.7;">
+            위 영상이 공식 성가로 고정됩니다. 신도들은 매주 금요일 면의 날에 이 성가를 틀어 의식을 행하세요.<br>
+            <span style="color:var(--gold-dark);">— 거룩한 면발의 선율로 영혼을 정화하라. R'Amen. —</span>
+          </p>
+        </div>
+
+        <!-- 성가 경전 구절 -->
+        <div style="margin-top:2rem;border:1px solid rgba(201,151,42,0.12);padding:2rem;background:rgba(10,6,8,0.4);">
+          <p style="font-size:0.68rem;letter-spacing:0.3em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:1.2rem;">성가 경전 구절</p>
+          <div class="verse-ornament" style="font-size:1.2rem;margin-bottom:1rem;">〰〰〰</div>
+          <p class="verse-text">"노래하는 자는 면발처럼 흘러야 하고,<br>그 선율은 소스 속 미트볼처럼 둥글어야 하리니,<br>귀로 듣는 것이 아니라 면발로 느끼는 것이 진정한 성가이니라."</p>
+          <p class="verse-source" style="margin-top:1rem;">— 거룩한 면발서 제7장 찬양편 3절</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer"><p>© 2026 스파게티 괴물교 — R'Amen.</p></div>
+  </div>
+
+</div><!-- /page-container -->
+
+
+
+
+
+<script>
+// ── NOODLE CANVAS ──
+const canvas = document.getElementById('noodle-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+class Noodle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = -100;
+    this.len = 80 + Math.random() * 180;
+    this.speed = 0.3 + Math.random() * 0.5;
+    this.amp = 20 + Math.random() * 40;
+    this.freq = 0.02 + Math.random() * 0.03;
+    this.phase = Math.random() * Math.PI * 2;
+    this.width = 1 + Math.random() * 2.5;
+    this.alpha = 0.3 + Math.random() * 0.5;
+    this.segments = 30;
+    this.drift = (Math.random() - 0.5) * 0.3;
+  }
+  update() {
+    this.y += this.speed;
+    this.phase += 0.015;
+    this.x += this.drift;
+    if (this.y > H + 150) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(201, 151, 42, ${this.alpha})`;
+    ctx.lineWidth = this.width;
+    ctx.lineCap = 'round';
+    for (let i = 0; i <= this.segments; i++) {
+      const t = i / this.segments;
+      const sx = this.x + Math.sin(this.phase + t * this.freq * this.len * 4) * this.amp;
+      const sy = this.y - this.len * (1 - t);
+      if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+    }
+    ctx.stroke();
+  }
+}
+
+const noodles = Array.from({length: 25}, () => {
+  const n = new Noodle();
+  n.y = Math.random() * H;
+  return n;
+});
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  noodles.forEach(n => { n.update(); n.draw(); });
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ── PAGE NAVIGATION ──
+let currentPage = 'home';
+
+function navigate(pageId) {
+  if (pageId === currentPage) return;
+
+  const current = document.getElementById('page-' + currentPage);
+  const next = document.getElementById('page-' + pageId);
+
+  if (!next) return;
+
+  // Close mobile nav
+  document.getElementById('main-nav').classList.remove('open');
+
+  // Exit current
+  current.classList.add('exit');
+  setTimeout(() => {
+    current.classList.remove('active', 'exit');
+    current.scrollTop = 0;
+  }, 250);
+
+  // Enter next
+  setTimeout(() => {
+    next.classList.add('active');
+    next.scrollTop = 0;
+  }, 150);
+
+  // Update nav active state
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+
+  currentPage = pageId;
+}
+
+// ── MOBILE NAV ──
+function toggleNav() {
+  document.getElementById('main-nav').classList.toggle('open');
+}
+
+// ── HYMN PLAYER ──
+function loadHymnPlayer() {
+  const wrap = document.getElementById('hymn-player-wrap');
+  wrap.style.cursor = 'default';
+  wrap.onclick = null;
+  wrap.innerHTML = `<iframe
+    src="https://www.youtube-nocookie.com/embed/DQhABahUY2Y?autoplay=1&rel=0&loop=1&playlist=DQhABahUY2Y"
+    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen title="The Saucy Lord"></iframe>`;
+}
+
+document.addEventListener('click', (e) => {
+  const nav = document.getElementById('main-nav');
+  const hamburger = document.getElementById('hamburger');
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !hamburger.contains(e.target)) {
+    nav.classList.remove('open');
+  }
+});
+</script>
+<!-- CONTACT MODAL -->
+<div class="contact-overlay" id="contact-overlay" onclick="handleContactOverlayClick(event)">
+  <div class="contact-modal" id="contact-modal">
+    <button class="contact-modal-close" onclick="closeContactModal()">✕</button>
+    <span class="contact-rune">🍝</span>
+    <p class="contact-eyebrow">Sacred Contact · 거룩한 문의</p>
+    <p class="contact-headline">경건한 마음을 가진<br>예비 신도여, 내게 오라</p>
+    <div class="contact-divider"></div>
+    <div class="contact-info-box">
+      <span class="contact-info-label">📡 연락망 · Discord</span>
+      <a href="https://discord.gg/5tzcscNUt" target="_blank" class="contact-discord-link">discord.gg/5tzcscNUt</a>
+    </div>
+    <p class="contact-footer-note">
+      면발의 인도 아래 연락하시오.<br>
+      불순한 마음으로 접촉 시 소스의 저주가 내립니다.<br>
+      <span style="color:rgba(201,151,42,0.4);font-size:0.65rem;letter-spacing:0.15em;">R'AMEN.</span>
+    </p>
+  </div>
+</div>
+
+<!-- NEWS MODAL -->
+<div class="news-modal-overlay" id="news-modal-overlay" onclick="handleModalOverlayClick(event)">
+  <div class="news-modal" id="news-modal">
+    <button class="news-modal-close" onclick="closeNewsModal()">✕</button>
+    <span class="news-modal-badge" id="modal-badge">NEW</span>
+    <h2 class="news-modal-title" id="modal-title"></h2>
+    <p class="news-modal-date" id="modal-date"></p>
+    <div class="news-modal-body" id="modal-body"></div>
+    <img class="news-modal-img" id="modal-img" src="" alt="" style="display:none;">
+  </div>
+</div>
+
+<script>
+const newsData = [
+  {
+    badge: 'NEW',
+    title: '안데스 산맥 해발 5,200m 지점에서 황금 포크 유물 발견 — 고고학계 충격',
+    date: '2026. 05. 02',
+    body: '페루 안데스 산맥의 극한 지대에서 인류 역사상 유례없는 유물이 발견되었습니다. 고고학 팀은 만년설이 녹아내린 해발 5,200m 지점에서 정교하게 세공된 순금 포크 한 쌍을 발굴했습니다.\n\n이 유물은 잉카 문명보다 훨씬 앞선 시기의 것으로 추정되나, 당시 기술로는 불가능한 정밀한 삼지창 형태를 띠고 있어 오파츠 논란이 일고 있습니다. 일각에서는 이것이 성 알덴테 1세가 남긴 고대 주방 기구라는 주장을 제기하며 성지 지정 가능성을 논의 중입니다.',
+    img: 'https://imgur.com/1xYQVUv.jpg'
+  },
+  {
+    badge: 'NEW',
+    title: '페루 상공, 성 알덴테 1세 형상의 구름 포착 — 기상청 "자연현상" 주장에 신도 반발',
+    date: '2026. 04. 30',
+    body: '현지 시간 29일 오후, 페루 쿠스코 상공에 성 알덴테 1세의 거룩한 형상을 닮은 거대 적란운이 나타나 수만 명의 목격자가 발생했습니다.\n\n기상청은 급격한 기류 변화에 따른 일시적 착시 현상이라고 발표했으나, 신도들은 구름의 끝부분이 완벽한 면발 형태를 유지하고 있었다는 점을 들어 \'천상에서 내려온 응답\'이라며 강력히 반발하고 있습니다. 현재 해당 지역 광장에는 수많은 인파가 모여 파스타 기도를 올리고 있습니다.',
+    img: 'https://imgur.com/diwVuwo.jpg'
+  },
+  {
+    badge: '공지',
+    title: '탄수화물 구원 프로젝트 3단계 개시 — 아프리카 5개국 면발 배급 완료',
+    date: '2026. 04. 22',
+    body: '국제 밀가루 연맹과 성 파스타 재단이 공동 추진하는 \'탄수화물 구원 프로젝트\'가 본궤도에 올랐습니다. 재단 측은 3단계 계획의 일환으로 아프리카 5개국 소외 계층을 대상으로 총 500톤 규모의 수제 생면 배급을 완료했다고 밝혔습니다.\n\n이번 지원은 단순한 식량 배급을 넘어 각국 고유의 소스와 조화를 이루는 \'맞춤형 면발\'을 제공함으로써 전 세계적인 미각 평화를 실현하는 데 목적을 두고 있습니다.',
+    img: 'https://imgur.com/3qetYum.jpg'
+  },
+  {
+    badge: '행사',
+    title: '제17회 스파게티 성체 봉헌식, 전국 성지에서 동시 거행 예정 — 6월 15일',
+    date: '2026. 04. 18',
+    body: '매년 전 세계 미식가와 신도들의 기대를 모으는 \'제17회 스파게티 성체 봉헌식\'의 일정이 확정되었습니다. 오는 6월 15일, 전국 12개 주요 성지에서 동시에 거행될 이번 행사는 역대 최대 규모인 10만 명분의 알리오올리오가 봉헌될 예정입니다.\n\n중앙 제단에서는 최고령 주방장이 직접 면을 삶는 퍼포먼스를 선보이며, 모든 참가자는 갓 삶아낸 면을 나누며 탄수화물의 은총을 기리게 됩니다.',
+    img: 'https://imgur.com/ZU1YoM0.jpg'
+  },
+  {
+    badge: '선교',
+    title: '이탈리아 나폴리 본성지 순례단 귀환 보고회 — "3번 테이블의 기적" 증언 공개',
+    date: '2026. 04. 12',
+    body: '40일간의 나폴리 본성지 순례를 마치고 돌아온 원정단의 보고회가 오늘 오전 열렸습니다. 이번 보고회에서 가장 주목받은 것은 이른바 \'3번 테이블의 기적\'이라 불리는 사건입니다.\n\n나폴리의 한 오래된 식당에서 순례단이 식사를 하던 중, 소스가 전혀 묻지 않은 투명한 면발이 접시 위에서 스스로 회전하며 성호를 그었다는 목격담이 쏟아졌습니다. 재단 조사위원회는 현장 영상과 목격자 진술을 토대로 이를 공식 기적으로 인증할지 검토 중입니다.',
+    img: 'https://imgur.com/o1aBWzn.jpg'
+  }
+];
+
+function openNewsModal(idx) {
+  const item = newsData[idx];
+  const overlay = document.getElementById('news-modal-overlay');
+  const badge = document.getElementById('modal-badge');
+  badge.textContent = item.badge;
+  badge.className = 'news-modal-badge' + (item.badge === 'NEW' ? ' new' : '');
+  document.getElementById('modal-title').textContent = item.title;
+  document.getElementById('modal-date').textContent = item.date;
+  // Render body with paragraphs
+  document.getElementById('modal-body').innerHTML = item.body
+    .split('\n\n')
+    .map(p => `<p style="margin-bottom:1.2rem;">${p}</p>`)
+    .join('');
+  const imgEl = document.getElementById('modal-img');
+  if (item.img) {
+    imgEl.src = item.img;
+    imgEl.style.display = 'block';
+  } else {
+    imgEl.style.display = 'none';
+  }
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeNewsModal() {
+  document.getElementById('news-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('news-modal-overlay')) closeNewsModal();
+}
+
+function openContactModal() {
+  document.getElementById('contact-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+  document.getElementById('contact-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleContactOverlayClick(e) {
+  if (e.target === document.getElementById('contact-overlay')) closeContactModal();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeNewsModal(); closeContactModal(); }
+});
+</script>
+
+</body>
+</html>
